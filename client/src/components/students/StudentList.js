@@ -1,17 +1,8 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { fetchStudents } from '../../actions';
+import React from 'react';
 
-class StudentList extends Component {
-    componentDidMount() {
-        this.props.fetchStudents();
-    }
-
-    renderStudents() {
-        console.log(this.props);
-        return this.props.students.reverse()
-            .filter(student => !(student.firstName.includes(this.props.search) || student.lastName.includes(this.props.search)))
-            .map (student => {
+const StudentList = ({ filteredStudents }) => {
+    const renderedList = filteredStudents.reverse()
+        .map (student => {
             return (
                 <div className="card blue-grey darken-1" key={student._id}>
                     <div className="card-content white-text">
@@ -20,17 +11,8 @@ class StudentList extends Component {
                 </div>
             );
         });
-    }
 
-    render() {
-        return (
-            <div>{this.renderStudents()}{console.log("rerender")}</div>
-        );
-    }
-}
-//state.students
-function mapStateToProps({ students }) {
-    return { students };
-}
+    return <div className="ui relaxed divided list">{renderedList}</div>;
+};
 
-export default connect(mapStateToProps, { fetchStudents })(StudentList);
+export default StudentList;

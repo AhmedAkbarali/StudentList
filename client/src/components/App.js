@@ -1,42 +1,42 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../actions';
+import { fetchStudents } from '../actions';
 import StudentList from "./students/StudentList";
 import '../App.css';
+import SearchBar from "./SearchBar";
 
 class App extends Component {
+    state = {
+        search: '',
+        filteredStudents: []
+    };
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            search: ''
-        };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+    async componentDidMount() {
+        await this.props.fetchStudents();
+        const response = this.props.students;
+        this.setState({filteredStudents: response});
     }
 
-    handleChange(event) {
-        this.setState({value: event.target.search});
-    }
+    onTermSubmit = async term => {
+        const filterolisto = await this.props.students.filter(function(student){
+            return student.firstName.toLowerCase().includes(term.toLowerCase()) ||
+                    student.lastName.toLowerCase().includes(term.toLowerCase()
+            )
+        });
 
-    handleSubmit(event) {
-        alert('A name was submitted: ' + this.state.value);
-        event.preventDefault();
-    }
-
-    componentDidMount() {
-        this.props.fetchStudents();
-    }
+        this.setState({
+            search: term,
+            filteredStudents: filterolisto
+        });
+    };
 
     render() {
         return (
             <div className="App">
                 <h3>Search</h3>
-                <input onChange={this.handleChange} placeholder="Search"></input>
-                <button onSubmit={this.handleSubmit}>Submit</button>
+                <SearchBar onFormSubmit={this.onTermSubmit}/>
                 <div style={{marginTop: '150px'}}>
-                    <StudentList />
+                    <StudentList filteredStudents={this.state.filteredStudents}  />
                 </div>
 
             </div>
@@ -45,8 +45,8 @@ class App extends Component {
 
 }
 
-function mapStateToProps(state) {
-    return { search: state.search };
+function mapStateToProps({ students }) {
+    return { students };
 }
 
-export default connect(mapStateToProps, actions)(App);
+export default connect(mapStateToProps, { fetchStudents })(App);

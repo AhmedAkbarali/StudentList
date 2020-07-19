@@ -30,10 +30,14 @@ class App extends Component {
         });
     };
 
+    resetList() {
+        this.onTermSubmit('');
+    }
+
     render() {
         return (
             <div className="App">
-                <h3>Search</h3>
+                <h3 onClick={this.resetList.bind(this)}>Search</h3>
                 <SearchBar onFormSubmit={this.onTermSubmit}/>
                 <div style={{marginTop: '150px'}}>
                     <StudentList filteredStudents={this.state.filteredStudents}  />
